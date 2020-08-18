@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+  namespace: rabbitmq
+data:
+  enabled_plugins: |
+    [rabbitmq_peer_discovery_k8s, rabbitmq_management].
+  rabbitmq.conf: |
+    ## необходимо включить плагин rabbit_peer_discovery_k8s для автоматического обнаружения нод
+    cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
+    cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+    ## используем hostname для peer discovery как рекомендованную опцию (может быть использован только с StatefulSel) 
+    cluster_formation.k8s.address_type = hostname
+    ## если нода недоступна в течение 90 секунд, то она удаляется
+    cluster_formation.node_cleanup.interval = 90
+    ## Подразумеваем, что в случае потере ноды, она должна востановится, следовательно нода должна вернутся в кластер без потери своего состояния
+    cluster_formation.node_cleanup.only_log_warning = true
+    ## Документация: https://www.rabbitmq.com/partitions.html
+    ## Отдаем RabbitMQ возможность автоматического востановления разделов
+    cluster_partition_handling = autoheal
+    ## Документация: https://www.rabbitmq.com/ha.html#master-migration-data-locality
+    ## Мастер-нодой будет выбираться нода с наименьшим кол-вом очередей, что позволит равномерно распределять нагрузку по нодам кластера 
+    queue_master_locator=min-masters

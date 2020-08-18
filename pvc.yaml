@@ -1,0 +1,13 @@
+# место для данных выделяется на машине чтобы избежать потери
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rabbitmq-data
+  namespace: rabbitmq
+spec:
+  storageClassName: rabbitmq-data-sigma
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,5 @@
+## Все ресурсы будут размещены в неймспейсе rabbitmq
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rabbitmq
